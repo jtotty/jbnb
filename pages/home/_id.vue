@@ -34,16 +34,7 @@ export default {
 
     head() {
         return {
-            title: this.home.title,
-            script: [{
-                src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAfTvOJtD9baE61FGm7goN7fM76XQVR3a8&libraries=places&callback=initMap',
-                hid: 'map',
-                async: true,
-                skip: process.client && window.mapLoaded
-            }, {
-                innerHTML: 'window.initMap = function() { window.mapLoaded = true }',
-                hid: 'map-init'
-            }]
+            title: this.home.title
         }
     },
 
@@ -52,32 +43,7 @@ export default {
     },
 
     mounted() {
-        // Check if the map has already been loaded every 200 milliseconds
-        const timer = setInterval(() => {
-            if (window.mapLoaded) {
-                clearInterval(timer)
-                this.initMap()
-            }
-        }, 200)
-    },
-
-    methods: {
-        /**
-         * Initialize the google map with set options and add a location marker
-         */
-        initMap() {
-            const position = new window.google.maps.LatLng(this.home._geoloc.lat, this.home._geoloc.lng)
-            const mapOptions = {
-                zoom: 18,
-                center: position,
-                disableDefaultUI: true,
-                zoomControl: true
-            }
-
-            const map = new window.google.maps.Map(this.$refs.map, mapOptions)
-            const marker = new window.google.maps.Marker({ position })
-            marker.setMap(map)
-        }
+        this.$maps.showMap(this.$refs.map, this.home._geoloc.lat, this.home._geoloc.lng)
     }
 }
 </script>
