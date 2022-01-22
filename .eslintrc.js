@@ -20,7 +20,7 @@ module.exports = {
         'space-before-function-paren': ['error', 'never'],
         'vue/html-indent': ['error', 4],
         'vue/multi-word-component-names': ['error', {
-            ignores: ['default']
+            ignores: ['default', 'error']
         }]
     }
 }
