@@ -17,6 +17,7 @@ module.exports = {
     // add your custom rules here
     rules: {
         indent: ['error', 4],
+        'space-before-function-paren': ['error', 'never'],
         'vue/html-indent': ['error', 4],
         'vue/multi-word-component-names': ['error', {
             ignores: ['default']

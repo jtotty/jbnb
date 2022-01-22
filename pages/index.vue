@@ -14,13 +14,13 @@ import homes from '~/data/homes'
 export default {
     name: 'HomePage',
 
-    data () {
+    data() {
         return {
             homes: homes.slice(0, 3)
         }
     },
 
-    head () {
+    head() {
         return {
             title: 'Homepage',
             meta: [{

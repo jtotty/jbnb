@@ -23,19 +23,19 @@
 import homes from '~/data/homes'
 
 export default {
-    data () {
+    data() {
         return {
             home: {}
         }
     },
 
-    head () {
+    head() {
         return {
             title: this.home.title
         }
     },
 
-    created () {
+    created() {
         const home = homes.find(home => home.objectID === this.$route.params.id)
         this.home = home
     }
