@@ -18,9 +18,7 @@
         {{ home.guests }} guests, {{ home.bedrooms }} bedrooms, {{ home.beds }} beds, {{ home.bathrooms }} bathrooms<br>
         {{ home.description }}
 
-        <div ref="map" style="height:800px;width:800px;">
-
-        </div>
+        <div ref="map" style="height:800px;width:800px;" />
     </div>
 </template>
 
@@ -30,8 +28,7 @@ import homes from '~/data/homes'
 export default {
     data() {
         return {
-            home: {},
-            map: {}
+            home: {}
         }
     },
 
@@ -39,31 +36,48 @@ export default {
         return {
             title: this.home.title,
             script: [{
-                src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAfTvOJtD9baE61FGm7goN7fM76XQVR3a8&libraries=places',
+                src: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAfTvOJtD9baE61FGm7goN7fM76XQVR3a8&libraries=places&callback=initMap',
                 hid: 'map',
-                defer: true
+                async: true,
+                skip: process.client && window.mapLoaded
+            }, {
+                innerHTML: 'window.initMap = function() { window.mapLoaded = true }',
+                hid: 'map-init'
             }]
         }
     },
 
     created() {
-        const home = homes.find(home => home.objectID === this.$route.params.id)
-        this.home = home
+        this.home = homes.find(home => home.objectID === this.$route.params.id)
     },
 
     mounted() {
-        const mapOptions = {
-            zoom: 18,
-            center: new window.google.maps.LatLng(this.home._geoloc.lat, this.home._geoloc.lng),
-            disableDefaultUI: true,
-            zoomControl: true
+        // Check if the map has already been loaded every 200 milliseconds
+        const timer = setInterval(() => {
+            if (window.mapLoaded) {
+                clearInterval(timer)
+                this.initMap()
+            }
+        }, 200)
+    },
+
+    methods: {
+        /**
+         * Initialize the google map with set options and add a location marker
+         */
+        initMap() {
+            const position = new window.google.maps.LatLng(this.home._geoloc.lat, this.home._geoloc.lng)
+            const mapOptions = {
+                zoom: 18,
+                center: position,
+                disableDefaultUI: true,
+                zoomControl: true
+            }
+
+            const map = new window.google.maps.Map(this.$refs.map, mapOptions)
+            const marker = new window.google.maps.Marker({ position })
+            marker.setMap(map)
         }
-
-        this.map = new window.google.maps.Map(this.$refs.map, mapOptions)
-
-        const position = new window.google.maps.LatLng(this.home._geoloc.lat, this.home._geoloc.lng)
-        const marker = new window.google.maps.Marker({ position })
-        marker.setMap(this.map)
     }
 }
 </script>
