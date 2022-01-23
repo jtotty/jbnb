@@ -19,20 +19,39 @@
         {{ home.description }}
 
         <div ref="map" style="height:800px;width:800px;" />
+        <div v-for="review in reviews" :key="review.objectID">
+            <img :src="review.reviewer.image"><br>
+            {{ review.reviewer.name }}<br>
+            {{ formatDate(review.date) }}<br>
+            <Short-Text :text="review.comment" :target="150" />
+        </div>
+
+        <img :src="user.image"><br>
+        {{ user.name }}<br>
+        {{ formatDate(user.joined) }}<br>
+        {{ user.reviewCount }}<br>
+        {{ user.description }}
     </div>
 </template>
 
 <script>
 export default {
     async asyncData({ params, $dataApi, error }) {
-        const response = await $dataApi.getHome(params.id)
+        const responses = await Promise.all([
+            $dataApi.getHome(params.id),
+            $dataApi.getReviewsByHomeId(params.id),
+            $dataApi.getUserByHomeId(params.id)
+        ])
 
-        if (!response.ok) {
-            return error({ statusCode: response.status, message: response.statusText })
+        const badResponse = responses.find(response => !response.ok)
+        if (badResponse) {
+            error({ statusCode: badResponse.status, message: badResponse.statusText })
         }
 
         return {
-            home: response.json
+            home: responses[0].json,
+            reviews: responses[1].json.hits,
+            user: responses[2].json.hits[0]
         }
     },
 
@@ -44,6 +63,13 @@ export default {
 
     mounted() {
         this.$maps.showMap(this.$refs.map, this.home._geoloc.lat, this.home._geoloc.lng)
+    },
+
+    methods: {
+        formatDate(dateStr) {
+            const date = new Date(dateStr)
+            return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+        }
     }
 }
 </script>
