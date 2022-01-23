@@ -43,7 +43,7 @@ export default function(context, inject) {
         })
     }
 
-    function showMap(canvas, lat, lng) {
+    function showMap(canvas, lat, lng, markers) {
         if (!isLoaded) {
             waitingQueue.push({ fn: showMap, arguments })
             return
@@ -54,11 +54,41 @@ export default function(context, inject) {
             zoom: 18,
             center: position,
             disableDefaultUI: true,
-            zoomControl: true
+            zoomControl: true,
+            styles: [{
+                featureType: 'poi.business',
+                elementType: 'labels.icon',
+                stylers: [{ visibility: 'off' }]
+            }]
         }
 
         const map = new window.google.maps.Map(canvas, mapOptions)
-        const marker = new window.google.maps.Marker({ position })
-        marker.setMap(map)
+
+        if (!markers) {
+            const marker = new window.google.maps.Marker({
+                position,
+                clickable: false
+            })
+            marker.setMap(map)
+            return
+        }
+
+        const bounds = new window.google.maps.LatLngBounds()
+        markers.forEach((home) => {
+            const position = new window.google.maps.LatLng(home.lat, home.lng)
+            const marker = new window.google.maps.Marker({
+                position,
+                label: {
+                    text: `$${home.pricePerNight}`,
+                    className: `marker home-${home.id}`
+                },
+                icon: 'https://maps.gstatic.com/mapfiles/transparent.png',
+                clickable: false
+            })
+            marker.setMap(map)
+            bounds.extend(position)
+        })
+
+        map.fitBounds(bounds)
     }
 }
