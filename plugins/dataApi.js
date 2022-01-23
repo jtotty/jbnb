@@ -9,9 +9,15 @@ export default function(context, inject) {
     inject('dataApi', {
         getHome,
         getReviewsByHomeId,
-        getUserByHomeId
+        getUserByHomeId,
+        getHomeByLocation
     })
 
+    /**
+     * Retrieve a home by its id.
+     * @param {number} homeId
+     * @returns {({unWrap}|{getErrorResponse})}
+     */
     async function getHome(homeId) {
         try {
             return unWrap(await fetch(`https://${appId}-dsn.algolia.net/1/indexes/homes/${homeId}`, {
@@ -22,6 +28,11 @@ export default function(context, inject) {
         }
     }
 
+    /**
+     * Get reviews by home id.
+     * @param {number} homeId
+     * @returns {({unWrap}|{getErrorResponse})}
+     */
     async function getReviewsByHomeId(homeId) {
         try {
             return unWrap(await fetch(`https://${appId}-dsn.algolia.net/1/indexes/reviews/query`, {
@@ -38,6 +49,11 @@ export default function(context, inject) {
         }
     }
 
+    /**
+     * Get a user by the home id.
+     * @param {number} homeId
+     * @returns {({unWrap}|{getErrorResponse})}
+     */
     async function getUserByHomeId(homeId) {
         try {
             return unWrap(await fetch(`https://${appId}-dsn.algolia.net/1/indexes/users/query`, {
@@ -53,6 +69,35 @@ export default function(context, inject) {
         }
     }
 
+    /**
+     * Get a home by its lat, lng, and radius in meters.
+     * @param {number} lat
+     * @param {number} lng
+     * @param {number} radiusInMeters
+     * @returns {({unWrap}|{getErrorResponse})}
+     */
+    async function getHomeByLocation(lat, lng, radiusInMeters = 1500) {
+        try {
+            return unWrap(await fetch(`https://${appId}-dsn.algolia.net/1/indexes/homes/query`, {
+                headers,
+                method: 'POST',
+                body: JSON.stringify({
+                    aroundLatLng: `${lat},${lng}`,
+                    aroundRadius: radiusInMeters,
+                    hitsPerPage: 10,
+                    attributesToHighlight: []
+                })
+            }))
+        } catch (error) {
+            return getErrorResponse(error)
+        }
+    }
+
+    /**
+     * Unwrap our API call response.
+     * @param {response} response
+     * @returns Object
+     */
     async function unWrap(response) {
         const json = await response.json()
         const { ok, status, statusText } = response
@@ -65,6 +110,11 @@ export default function(context, inject) {
         }
     }
 
+    /**
+     * Handle our error response object.
+     * @param {Object} error
+     * @returns Object
+     */
     function getErrorResponse(error) {
         return {
             ok: false,

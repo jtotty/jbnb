@@ -25,9 +25,9 @@ export default {
             this.$router.push({
                 name: 'searchCity',
                 query: {
-                    Lat: place.geometry.location.lat(),
-                    Lng: place.geometry.location.lng(),
-                    Label: this.$refs.citySearch.value
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                    label: this.$refs.citySearch.value
                 }
             })
         }
