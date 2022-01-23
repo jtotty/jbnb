@@ -1,41 +1,58 @@
 export default function(context, inject) {
-    let mapLoaded = false
-    let mapWaiting = null
+    let isLoaded = false
+    let waitingQueue = []
 
     addScript()
 
     // make functions or values available across your app
     // https://nuxtjs.org/docs/directory-structure/plugins/#inject-in-root--context
     inject('maps', {
-        showMap
+        showMap,
+        makeAutoComplete
     })
 
     function addScript() {
         const script = document.createElement('script')
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAfTvOJtD9baE61FGm7goN7fM76XQVR3a8&libraries=places&callback=initMap'
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAfTvOJtD9baE61FGm7goN7fM76XQVR3a8&libraries=places&callback=initGoogleMaps'
         script.async = true
-        window.initMap = initMap
+        window.initGoogleMaps = initGoogleMaps
         document.head.appendChild(script)
     }
 
-    function initMap() {
-        mapLoaded = true
-        if (mapWaiting) {
-            const { canvas, lat, lng } = mapWaiting
-            renderMap(canvas, lat, lng)
-            mapWaiting = null
+    function initGoogleMaps() {
+        isLoaded = true
+        waitingQueue.forEach((item) => {
+            if (typeof item.fn === 'function') {
+                item.fn(...item.arguments)
+            }
+        })
+
+        waitingQueue = []
+    }
+
+    function makeAutoComplete(input) {
+        if (!isLoaded) {
+            waitingQueue.push({ fn: makeAutoComplete, arguments })
+            return
         }
+
+        const autoComplete = new window.google.maps.places.Autocomplete(input, { types: ['(cities)'] })
+        autoComplete.addListener('place_changed', () => {
+            const place = autoComplete.getPlace()
+            console.log(place)
+            input.dispatchEvent(new CustomEvent('changed', { detail: place }))
+        })
     }
 
     function showMap(canvas, lat, lng) {
-        if (mapLoaded) {
-            renderMap(canvas, lat, lng)
-        } else {
-            mapWaiting = { canvas, lat, lng }
+        if (!isLoaded) {
+            waitingQueue.push({
+                fn: showMap,
+                arguments
+            })
+            return
         }
-    }
 
-    function renderMap(canvas, lat, lng) {
         const position = new window.google.maps.LatLng(lat, lng)
         const mapOptions = {
             zoom: 18,
