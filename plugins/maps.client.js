@@ -2,6 +2,7 @@ export default function(context, inject) {
     let isLoaded = false
     let waitingQueue = []
 
+    window.initGoogleMaps = init
     addScript()
 
     // make functions or values available across your app
@@ -15,11 +16,10 @@ export default function(context, inject) {
         const script = document.createElement('script')
         script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAfTvOJtD9baE61FGm7goN7fM76XQVR3a8&libraries=places&callback=initGoogleMaps'
         script.async = true
-        window.initGoogleMaps = initGoogleMaps
         document.head.appendChild(script)
     }
 
-    function initGoogleMaps() {
+    function init() {
         isLoaded = true
         waitingQueue.forEach((item) => {
             if (typeof item.fn === 'function') {

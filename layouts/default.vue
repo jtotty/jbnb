@@ -1,9 +1,11 @@
 <template>
     <div class="app">
         <header class="app-header">
-            <div class="app-logo">
-                <img src="/images/logo.svg">
-            </div>
+            <NuxtLink :to="`/`">
+                <button class="app-logo">
+                    <img src="/images/logo.svg">
+                </button>
+            </NuxtLink>
             <div class="app-search">
                 <input ref="citySearch" type="text" placeholder="Enter your address" @changed="changed">
                 <input type="text" class="datepicker" placeholder="Check in">
@@ -17,7 +19,7 @@
                 <div class="name">
                     Host
                 </div>
-                <img src="/images/user.jpg" class="avatar">
+                <div id="googleButton"></div>
             </div>
         </header>
         <Nuxt />

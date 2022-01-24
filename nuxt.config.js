@@ -25,7 +25,8 @@ export default {
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
     plugins: [
         '~/plugins/maps.client',
-        '~/plugins/dataApi'
+        '~/plugins/dataApi',
+        '~/plugins/auth.client'
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
@@ -33,10 +34,10 @@ export default {
 
     // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
     buildModules: [
+        // 'nuxt-vite',
         // https://go.nuxtjs.dev/eslint
         '@nuxtjs/eslint-module',
         '@nuxtjs/tailwindcss'
-        // 'nuxt-vite'
     ],
 
     // Modules: https://go.nuxtjs.dev/config-modules
@@ -53,5 +54,16 @@ export default {
 
     router: {
         prefetchLinks: false
+    },
+
+    // https://nuxtjs.org/docs/directory-structure/nuxt-config#runtimeconfig
+    publicRuntimeConfig: {
+        auth: {
+            cookieName: 'idToken',
+            clientId: '759836191057-uqsn683tjf059shvtdf7r56j5cqrvhaj.apps.googleusercontent.com'
+        }
+    },
+
+    privateRuntimeConfig: {
     }
 }
