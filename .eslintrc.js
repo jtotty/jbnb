@@ -19,8 +19,6 @@ module.exports = {
         indent: ['error', 4],
         'space-before-function-paren': ['error', 'never'],
         'vue/html-indent': ['error', 4],
-        'vue/multi-word-component-names': ['error', {
-            ignores: ['default', 'error']
-        }]
+        'vue/multi-word-component-names': ['off']
     }
 }

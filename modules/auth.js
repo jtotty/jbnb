@@ -11,6 +11,14 @@ export default function() {
         app.use('/api', handler)
     })
 
+    // SPA mode for admin routes
+    this.nuxt.hook('render:setupMiddleware', (app) => {
+        app.use('/admin', (req, res, next) => {
+            res.spa = true
+            next()
+        })
+    })
+
     /**
      * Handle the request and set identity property.
      * @param {Request} req
