@@ -1,6 +1,9 @@
 import cookie from 'cookie'
 import { OAuth2Client } from 'google-auth-library'
 
+/**
+ * Authentication middleware.
+ */
 export default function() {
     const authConfig = this.options.publicRuntimeConfig.auth
 
@@ -8,6 +11,12 @@ export default function() {
         app.use('/api', handler)
     })
 
+    /**
+     * Handle the request and set identity property.
+     * @param {Request} req
+     * @param {Responst} res
+     * @param {function} next
+     */
     async function handler(req, res, next) {
         const idToken = cookie.parse(req.headers.cookie)[authConfig.cookieName]
         if (!idToken) { return rejectHit(res) }
@@ -25,6 +34,11 @@ export default function() {
         next()
     }
 
+    /**
+     * Get the Google User that's logged in.
+     * @param {number} idToken
+     * @returns Object
+     */
     async function getUser(idToken) {
         const client = new OAuth2Client(authConfig.clientId)
 
@@ -41,6 +55,10 @@ export default function() {
         }
     }
 
+    /**
+     * Reject the response.
+     * @param {Object} res
+     */
     function rejectHit(res) {
         res.statusCode = 401
         res.end()

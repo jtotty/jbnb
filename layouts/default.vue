@@ -20,9 +20,9 @@
                     <div class="name">
                         Host
                     </div>
-                    <img :src="user.profileUrl" class="avatar">
+                    <img :src="user.profileImageUrl" class="avatar">
                 </template>
-                <div v-show="!isLoggedIn" id="googleButton" class="ml-8"></div>
+                <div v-show="!isLoggedIn" id="googleButton" class="ml-8" />
             </div>
         </header>
         <Nuxt />
