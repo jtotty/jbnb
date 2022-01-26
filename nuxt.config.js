@@ -43,7 +43,9 @@ export default {
     // Modules: https://go.nuxtjs.dev/config-modules
     modules: [
         '~/modules/auth',
-        '~/modules/algolia'
+        '~/modules/algolia',
+        '~/modules/cloudinary',
+        '@nuxtjs/cloudinary'
     ],
 
     // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -68,6 +70,9 @@ export default {
         algolia: {
             appId: process.env.ALGOLIA_APP_ID,
             key: process.env.ALGOLIA_PUB_KEY
+        },
+        cloudinary: {
+            apiKey: process.env.CLOUDINARY_API_KEY
         }
     },
 
@@ -75,6 +80,16 @@ export default {
         algolia: {
             appId: process.env.ALGOLIA_APP_ID,
             key: process.env.ALGOLIA_CUSTOM_KEY
+        },
+        cloudinary: {
+            apiSecret: process.env.CLOUDINARY_API_SECRET
         }
+    },
+
+    cloudinary: {
+        cloudName: process.env.CLOUDINARY_NAME,
+        apiKey: process.env.CLOUDINARY_API_KEY,
+        apiSecret: process.env.CLOUDINARY_API_SECRET,
+        region: 'europe'
     }
 }

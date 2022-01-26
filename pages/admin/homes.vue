@@ -5,6 +5,7 @@
             Add a home
         </h2>
         <form class="form" @submit.prevent="onSubmit">
+            <ImageUploader />
             Images<br>
             <input v-model="home.images[0]" type="text" class="w-3/4"><br>
             <input v-model="home.images[1]" type="text" class="w-3/4"><br>
