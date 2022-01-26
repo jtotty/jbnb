@@ -7,7 +7,7 @@ export default (algoliaConfig) => {
     const apiURL = `https://${algoliaConfig.appId}-dsn.algolia.net/1/indexes/users`
 
     return {
-        create: async(identity, payload) => {
+        async create(identity, payload) {
             try {
                 return unWrap(await fetch(`${apiURL}/${identity.id}`, {
                     headers,
@@ -19,7 +19,7 @@ export default (algoliaConfig) => {
             }
         },
 
-        getById: async(identity) => {
+        async getById(identity) {
             try {
                 return unWrap(await fetch(`${apiURL}/${identity.id}`, { headers }))
             } catch (error) {
