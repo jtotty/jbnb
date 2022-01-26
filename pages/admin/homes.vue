@@ -37,6 +37,8 @@
             <input v-model="home.beds" type="number" class="w-14">
             <input v-model="home.bathrooms" type="number" class="w-14"><br>
 
+            <input ref="locationSelector" type="text" autocomplete="off" placeholder="Select a location" @changed="changed"><br>
+
             Address <input v-model="home.location.address" type="text" class="w-60"><br>
             City <input v-model="home.location.city" type="text" class="w-60"><br>
             State <input v-model="home.location.state" type="text" class="w-60"><br>
@@ -72,8 +74,8 @@ export default {
                     country: ''
                 },
                 _geoloc: {
-                    lat: 26.1,
-                    lng: 26.1
+                    lat: '',
+                    lng: ''
                 },
                 images: [
                     'https://images.unsplash.com/photo-1542718610-a1d656d1884c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80',
@@ -86,6 +88,10 @@ export default {
         }
     },
 
+    mounted() {
+        this.$maps.makeAutoComplete(this.$refs.locationSelector, ['address'])
+    },
+
     methods: {
         async onSubmit() {
             await fetch('/api/homes', {
@@ -93,6 +99,26 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.home)
             })
+        },
+
+        getAddressPart(parts, type) {
+            return parts.find(part => part.types.includes(type))
+        },
+
+        changed(event) {
+            const addressParts = event.detail.address_components
+            const street = this.getAddressPart(addressParts, 'street_number')?.short_name || ''
+            const route = this.getAddressPart(addressParts, 'route')?.short_name || ''
+
+            this.home.location.address = street + ' ' + route
+            this.home.location.city = this.getAddressPart(addressParts, 'locality')?.short_name || ''
+            this.home.location.state = this.getAddressPart(addressParts, 'administrative_area_level_2')?.long_name || ''
+            this.home.location.postalCode = this.getAddressPart(addressParts, 'postal_code')?.short_name || ''
+            this.home.location.country = this.getAddressPart(addressParts, 'country')?.short_name || ''
+
+            const geo = event.detail.geometry.location
+            this.home._geoloc.lat = geo.lat()
+            this.home._geoloc.lng = geo.lng()
         }
     }
 }
