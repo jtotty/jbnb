@@ -1,6 +1,13 @@
 <template>
     <div class="p-4">
-        Admin
+        <h1 class="text-2xl font-bold">
+            Admin
+        </h1>
+        <div class="bg-gray-200 p-2">
+            <NuxtLink to="/admin/homes">
+                Homes
+            </NuxtLink>
+        </div>
         <NuxtChild />
     </div>
 </template>
